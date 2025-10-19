@@ -148,22 +148,23 @@ export function isNameMatch(actualName: string, searchName: string): NameMatchRe
 export async function resolveListId(
   listId?: string,
   listName?: string,
-  workspaceService = clickUpServices.workspace
+  workspaceService?: any
 ): Promise<string> {
   // If list ID is directly provided, use it
   if (listId) {
     return listId;
   }
-  
+
   // If list name is provided, find the corresponding ID
   if (listName) {
-    const listInfo = await findListIDByName(workspaceService, listName);
+    const ws = workspaceService || clickUpServices.workspace;
+    const listInfo = await findListIDByName(ws, listName);
     if (!listInfo) {
       throw new Error(`List "${listName}" not found`);
     }
     return listInfo.id;
   }
-  
+
   // If neither is provided, throw an error
   throw new Error("Either listId or listName must be provided");
 } 

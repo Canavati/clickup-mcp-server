@@ -16,7 +16,6 @@ import { Logger } from "../logger.js";
 import { clickUpServices } from "../services/shared.js";
 
 const logger = new Logger('DocumentTools');
-const { document: documentService } = clickUpServices;
 
 /**
  * Tool definition for creating a document
@@ -267,7 +266,7 @@ export const updateDocumentPageTool = {
  * Helper function to find a document by title in a container
  */
 async function findDocumentByTitle(parentId: string, title: string): Promise<string | null> {
-  const response = await documentService.listDocuments({
+  const response = await clickUpServices.document.listDocuments({
     parent_id: parentId
   });
   const document = response.docs.find(doc => doc.name === title);
@@ -339,8 +338,8 @@ export async function handleGetDocument(parameters: any) {
 
   try {
     // Get the document
-    const document = await documentService.getDocument(targetDocumentId);
-    
+    const document = await clickUpServices.document.getDocument(targetDocumentId);
+
     return sponsorService.createResponse({
       id: document.id,
       name: document.name,
@@ -386,8 +385,8 @@ export async function handleListDocuments(parameters: any) {
     if (limit !== undefined) options.limit = limit;
     if (next_cursor !== undefined) options.next_cursor = next_cursor;
 
-    const response = await documentService.listDocuments(options);
-    
+    const response = await clickUpServices.document.listDocuments(options);
+
     // Ensure we have a valid response
     if (!response || !response.docs) {
       return sponsorService.createResponse({
@@ -425,10 +424,10 @@ export async function handleListDocuments(parameters: any) {
  */
 export async function handleListDocumentPages(params: any) {
   logger.info('Listing document pages', { params });
-  
+
   try {
     const { documentId, max_page_depth = -1 } = params;
-    const pages = await documentService.listDocumentPages(documentId, { max_page_depth });
+    const pages = await clickUpServices.document.listDocumentPages(documentId, { max_page_depth });
     return sponsorService.createResponse(pages);
   } catch (error) {
     logger.error('Error listing document pages', error);
