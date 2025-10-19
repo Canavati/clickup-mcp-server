@@ -31,7 +31,10 @@ COPY --from=builder /app/node_modules ./node_modules
 # Copy the entrypoint script if necessary
 COPY --from=builder /app/package.json ./
 
-# Expose the desired port (if the server binds to a port)
+# Enable HTTP Streamable transport for Smithery
+ENV ENABLE_SSE=true
+
+# Expose the port (Smithery will set PORT env var at runtime)
 EXPOSE 8080
 
 # Define the command to run the application
