@@ -137,17 +137,24 @@ export function createRateLimitMiddleware() {
 /**
  * CORS middleware - configures cross-origin resource sharing
  * Only enabled when ENABLE_CORS=true
+ *
+ * In production (Smithery, cloud deployments), allows all origins.
+ * For local development with specific origins, use ALLOWED_ORIGINS env var.
  */
 export function createCorsMiddleware() {
   if (!config.enableCors) {
     return (_req: Request, _res: Response, next: NextFunction) => next();
   }
 
+  // If specific origins are configured, use allowlist
+  // Otherwise, allow all origins (needed for Smithery and cloud deployments)
+  const allowAllOrigins = process.env.ALLOWED_ORIGINS === undefined;
+
   return cors({
-    origin: (origin, callback) => {
+    origin: allowAllOrigins ? true : (origin, callback) => {
       // Allow requests with no origin (like mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
-      
+
       if (config.allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
