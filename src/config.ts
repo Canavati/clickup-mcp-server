@@ -117,9 +117,10 @@ const parseOrigins = (value: string | undefined, defaultValue: string[]): string
 };
 
 // Load configuration from command line args or environment variables
+// Smithery passes config as camelCase env vars (clickupApiKey), but also support UPPER_SNAKE_CASE
 const configuration: Config = {
-  clickupApiKey: envArgs.clickupApiKey || process.env.CLICKUP_API_KEY || '',
-  clickupTeamId: envArgs.clickupTeamId || process.env.CLICKUP_TEAM_ID || '',
+  clickupApiKey: envArgs.clickupApiKey || process.env.CLICKUP_API_KEY || process.env.clickupApiKey || '',
+  clickupTeamId: envArgs.clickupTeamId || process.env.CLICKUP_TEAM_ID || process.env.clickupTeamId || '',
   enableSponsorMessage: process.env.ENABLE_SPONSOR_MESSAGE !== 'false',
   documentSupport: envArgs.documentSupport || process.env.DOCUMENT_SUPPORT || process.env.DOCUMENT_MODULE || process.env.DOCUMENT_MODEL || 'false',
   logLevel: parseLogLevel(envArgs.logLevel || process.env.LOG_LEVEL),
