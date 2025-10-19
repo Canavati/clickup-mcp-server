@@ -52,32 +52,24 @@ export const clickUpServices = {
   get tag() { return getClickUpServices().tag; },
 };
 
-// Create module exports object for lazy individual service exports
-const exports = {} as any;
-Object.defineProperty(exports, 'listService', {
-  get() { return getClickUpServices().list; }
+// Export individual service proxies for backward compatibility
+// Each is a Proxy that forwards property access to clickUpServices
+// This maintains lazy initialization - services only created when actually used
+export const listService = new Proxy({} as any, {
+  get(_target, prop) { return clickUpServices.list[prop]; }
 });
-Object.defineProperty(exports, 'taskService', {
-  get() { return getClickUpServices().task; }
+export const taskService = new Proxy({} as any, {
+  get(_target, prop) { return clickUpServices.task[prop]; }
 });
-Object.defineProperty(exports, 'folderService', {
-  get() { return getClickUpServices().folder; }
+export const folderService = new Proxy({} as any, {
+  get(_target, prop) { return clickUpServices.folder[prop]; }
 });
-Object.defineProperty(exports, 'workspaceService', {
-  get() { return getClickUpServices().workspace; }
+export const workspaceService = new Proxy({} as any, {
+  get(_target, prop) { return clickUpServices.workspace[prop]; }
 });
-Object.defineProperty(exports, 'timeTrackingService', {
-  get() { return getClickUpServices().timeTracking; }
+export const timeTrackingService = new Proxy({} as any, {
+  get(_target, prop) { return clickUpServices.timeTracking[prop]; }
 });
-Object.defineProperty(exports, 'documentService', {
-  get() { return getClickUpServices().document; }
+export const documentService = new Proxy({} as any, {
+  get(_target, prop) { return clickUpServices.document[prop]; }
 });
-
-export const {
-  listService,
-  taskService,
-  folderService,
-  workspaceService,
-  timeTrackingService,
-  documentService
-} = exports;
