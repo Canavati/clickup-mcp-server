@@ -188,17 +188,21 @@ export function startSSEServer() {
   const PORT = Number(configuration.port ?? '3231');
   const HTTPS_PORT = Number(configuration.httpsPort ?? '3443');
 
+  // Bind to 0.0.0.0 for Docker/production, or custom host from env var
+  const HOST = process.env.BIND_HOST || '0.0.0.0';
+
   // Function to create and start HTTP server
   function startHttpServer() {
     const httpServer = http.createServer(app);
-    httpServer.listen(PORT, '127.0.0.1', () => {
+    httpServer.listen(PORT, HOST, () => {
       logger.info('ClickUp MCP Server (HTTP) started', {
         port: PORT,
+        host: HOST,
         protocol: 'http',
         endpoints: {
-          streamableHttp: `http://127.0.0.1:${PORT}/mcp`,
-          legacySSE: `http://127.0.0.1:${PORT}/sse`,
-          health: `http://127.0.0.1:${PORT}/health`
+          streamableHttp: `http://${HOST}:${PORT}/mcp`,
+          legacySSE: `http://${HOST}:${PORT}/sse`,
+          health: `http://${HOST}:${PORT}/health`
         },
         security: {
           featuresEnabled: configuration.enableSecurityFeatures,
@@ -209,10 +213,10 @@ export function startSSEServer() {
         }
       });
 
-      console.log(`✅ ClickUp MCP Server started on http://127.0.0.1:${PORT}`);
-      console.log(`📡 Streamable HTTP endpoint: http://127.0.0.1:${PORT}/mcp`);
-      console.log(`🔄 Legacy SSE endpoint: http://127.0.0.1:${PORT}/sse`);
-      console.log(`❤️  Health check: http://127.0.0.1:${PORT}/health`);
+      console.log(`✅ ClickUp MCP Server started on http://${HOST}:${PORT}`);
+      console.log(`📡 Streamable HTTP endpoint: http://${HOST}:${PORT}/mcp`);
+      console.log(`🔄 Legacy SSE endpoint: http://${HOST}:${PORT}/sse`);
+      console.log(`❤️  Health check: http://${HOST}:${PORT}/health`);
 
       if (configuration.enableHttps) {
         console.log(`⚠️  HTTP server running alongside HTTPS - consider disabling HTTP in production`);
@@ -253,14 +257,15 @@ export function startSSEServer() {
       }
 
       const httpsServer = https.createServer(httpsOptions, app);
-      httpsServer.listen(HTTPS_PORT, '127.0.0.1', () => {
+      httpsServer.listen(HTTPS_PORT, HOST, () => {
         logger.info('ClickUp MCP Server (HTTPS) started', {
           port: HTTPS_PORT,
+          host: HOST,
           protocol: 'https',
           endpoints: {
-            streamableHttp: `https://127.0.0.1:${HTTPS_PORT}/mcp`,
-            legacySSE: `https://127.0.0.1:${HTTPS_PORT}/sse`,
-            health: `https://127.0.0.1:${HTTPS_PORT}/health`
+            streamableHttp: `https://${HOST}:${HTTPS_PORT}/mcp`,
+            legacySSE: `https://${HOST}:${HTTPS_PORT}/sse`,
+            health: `https://${HOST}:${HTTPS_PORT}/health`
           },
           security: {
             featuresEnabled: configuration.enableSecurityFeatures,
@@ -271,10 +276,10 @@ export function startSSEServer() {
           }
         });
 
-        console.log(`🔒 ClickUp MCP Server (HTTPS) started on https://127.0.0.1:${HTTPS_PORT}`);
-        console.log(`📡 Streamable HTTPS endpoint: https://127.0.0.1:${HTTPS_PORT}/mcp`);
-        console.log(`🔄 Legacy SSE HTTPS endpoint: https://127.0.0.1:${HTTPS_PORT}/sse`);
-        console.log(`❤️  Health check HTTPS: https://127.0.0.1:${HTTPS_PORT}/health`);
+        console.log(`🔒 ClickUp MCP Server (HTTPS) started on https://${HOST}:${HTTPS_PORT}`);
+        console.log(`📡 Streamable HTTPS endpoint: https://${HOST}:${HTTPS_PORT}/mcp`);
+        console.log(`🔄 Legacy SSE HTTPS endpoint: https://${HOST}:${HTTPS_PORT}/sse`);
+        console.log(`❤️  Health check HTTPS: https://${HOST}:${HTTPS_PORT}/health`);
       });
       return httpsServer;
     } catch (error) {
