@@ -72,11 +72,30 @@ export function startSSEServer() {
   // Streamable HTTP endpoint - handles POST requests for client-to-server communication
   app.post('/mcp', async (req, res) => {
     try {
+      // Fix Accept header for clients that don't send it correctly (like Smithery scanner)
+      // Override the headers.accept property to ensure the SDK sees the correct value
+      const originalHeaders = req.headers;
+      const originalAccept = originalHeaders.accept || originalHeaders['accept'] || '';
+      const fixedAccept = (!originalAccept || !originalAccept.includes('text/event-stream'))
+        ? (originalAccept ? `${originalAccept}, text/event-stream` : 'application/json, text/event-stream')
+        : originalAccept;
+
+      // Create a proxy to intercept header access
+      req.headers = new Proxy(originalHeaders, {
+        get(target, prop) {
+          if (prop === 'accept' || prop === 'Accept') {
+            return fixedAccept;
+          }
+          return target[prop as keyof typeof target];
+        }
+      });
+
       const sessionId = req.headers['mcp-session-id'] as string | undefined;
       logger.debug('MCP request received', {
         sessionId,
         hasBody: !!req.body,
         contentType: req.headers['content-type'],
+        accept: req.headers.accept,
         origin: req.headers.origin
       });
       let transport: StreamableHTTPServerTransport;
