@@ -40,36 +40,51 @@ function getClickUpServices(): ClickUpServices {
   return clickUpServicesInstance;
 }
 
-// Export lazy-loaded services object
-// Services are only created when first accessed, not at module load time
+// Export lazy-loaded services object using Proxy pattern
+// Proxies defer service creation until methods are actually called, not when destructured
+// This allows module-level destructuring (e.g., const { task } = clickUpServices) without triggering initialization
+// Services are only created when tool methods are invoked (e.g., task.createTask(...))
 export const clickUpServices = {
-  get list() { return getClickUpServices().list; },
-  get task() { return getClickUpServices().task; },
-  get folder() { return getClickUpServices().folder; },
-  get workspace() { return getClickUpServices().workspace; },
-  get timeTracking() { return getClickUpServices().timeTracking; },
-  get document() { return getClickUpServices().document; },
-  get tag() { return getClickUpServices().tag; },
+  list: new Proxy({} as any, {
+    get(_target, prop) { return getClickUpServices().list[prop]; }
+  }),
+  task: new Proxy({} as any, {
+    get(_target, prop) { return getClickUpServices().task[prop]; }
+  }),
+  folder: new Proxy({} as any, {
+    get(_target, prop) { return getClickUpServices().folder[prop]; }
+  }),
+  workspace: new Proxy({} as any, {
+    get(_target, prop) { return getClickUpServices().workspace[prop]; }
+  }),
+  timeTracking: new Proxy({} as any, {
+    get(_target, prop) { return getClickUpServices().timeTracking[prop]; }
+  }),
+  document: new Proxy({} as any, {
+    get(_target, prop) { return getClickUpServices().document[prop]; }
+  }),
+  tag: new Proxy({} as any, {
+    get(_target, prop) { return getClickUpServices().tag[prop]; }
+  }),
 };
 
 // Export individual service proxies for backward compatibility
-// Each is a Proxy that forwards property access to clickUpServices
-// This maintains lazy initialization - services only created when actually used
+// Each is a Proxy that directly calls getClickUpServices() to maintain lazy initialization
 export const listService = new Proxy({} as any, {
-  get(_target, prop) { return clickUpServices.list[prop]; }
+  get(_target, prop) { return getClickUpServices().list[prop]; }
 });
 export const taskService = new Proxy({} as any, {
-  get(_target, prop) { return clickUpServices.task[prop]; }
+  get(_target, prop) { return getClickUpServices().task[prop]; }
 });
 export const folderService = new Proxy({} as any, {
-  get(_target, prop) { return clickUpServices.folder[prop]; }
+  get(_target, prop) { return getClickUpServices().folder[prop]; }
 });
 export const workspaceService = new Proxy({} as any, {
-  get(_target, prop) { return clickUpServices.workspace[prop]; }
+  get(_target, prop) { return getClickUpServices().workspace[prop]; }
 });
 export const timeTrackingService = new Proxy({} as any, {
-  get(_target, prop) { return clickUpServices.timeTracking[prop]; }
+  get(_target, prop) { return getClickUpServices().timeTracking[prop]; }
 });
 export const documentService = new Proxy({} as any, {
-  get(_target, prop) { return clickUpServices.document[prop]; }
+  get(_target, prop) { return getClickUpServices().document[prop]; }
 });

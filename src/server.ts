@@ -98,9 +98,6 @@ import { clickUpServices } from "./services/shared.js";
 // Create a logger instance for server
 const logger = new Logger('Server');
 
-// Use existing services from shared module instead of creating new ones
-const { workspace } = clickUpServices;
-
 /**
  * Determines if a tool should be enabled based on ENABLED_TOOLS and DISABLED_TOOLS configuration.
  *
@@ -372,8 +369,3 @@ export function configureServer() {
 
   return server;
 }
-
-/**
- * Export the clickup service for use in tool handlers
- */
-export { workspace };

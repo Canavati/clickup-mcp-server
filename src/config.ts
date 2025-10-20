@@ -162,16 +162,21 @@ const configuration: Config = {
 
 // Don't log to console as it interferes with JSON-RPC communication
 
-// Validate only the required variables are present
-const requiredVars = ['clickupApiKey', 'clickupTeamId'];
-const missingEnvVars = requiredVars
-  .filter(key => !configuration[key as keyof Config])
-  .map(key => key);
-
-if (missingEnvVars.length > 0) {
-  throw new Error(
-    `Missing required environment variables: ${missingEnvVars.join(', ')}`
-  );
-}
+// Allow credentials to be optional to support Smithery scanner inspection
+// The scanner needs to list tools without credentials present
+// When tools are actually called without credentials, the ClickUp API will return 401/403 errors
+// which will be handled gracefully by the service layer
+//
+// Previous validation (now disabled to support Smithery scanner):
+// const requiredVars = ['clickupApiKey', 'clickupTeamId'];
+// const missingEnvVars = requiredVars
+//   .filter(key => !configuration[key as keyof Config])
+//   .map(key => key);
+//
+// if (missingEnvVars.length > 0) {
+//   throw new Error(
+//     `Missing required environment variables: ${missingEnvVars.join(', ')}`
+//   );
+// }
 
 export default configuration;
