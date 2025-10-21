@@ -32,6 +32,9 @@ const app = express();
 const logger = new Logger('SSEServer');
 
 export function startSSEServer() {
+  // Set log level to INFO for debugging Smithery credential issues
+  process.env.LOG_LEVEL = process.env.LOG_LEVEL || 'INFO';
+
   // Configure the unified server first
   configureServer();
 
@@ -95,16 +98,29 @@ export function startSSEServer() {
       // Read credentials from Smithery query params and set env vars
       // Smithery sends config via query parameters: /mcp?clickupApiKey=xxx&clickupTeamId=yyy&documentSupport=true
       // This replicates the behavior of the original stdio transport that used commandFunction to set env vars
+
+      // DEBUG: Log all query params to see what Smithery is sending
+      logger.info('Query params received', {
+        allParams: Object.keys(req.query),
+        hasClickupApiKey: !!req.query.clickupApiKey,
+        hasClickupTeamId: !!req.query.clickupTeamId,
+        clickupApiKeyLength: req.query.clickupApiKey ? (req.query.clickupApiKey as string).length : 0,
+        clickupTeamIdLength: req.query.clickupTeamId ? (req.query.clickupTeamId as string).length : 0
+      });
+
       if (req.query.clickupApiKey) {
         process.env.CLICKUP_API_KEY = req.query.clickupApiKey as string;
         process.env.clickupApiKey = req.query.clickupApiKey as string;
+        logger.info('Set CLICKUP_API_KEY from query param', { length: (req.query.clickupApiKey as string).length });
       }
       if (req.query.clickupTeamId) {
         process.env.CLICKUP_TEAM_ID = req.query.clickupTeamId as string;
         process.env.clickupTeamId = req.query.clickupTeamId as string;
+        logger.info('Set CLICKUP_TEAM_ID from query param', { length: (req.query.clickupTeamId as string).length });
       }
       if (req.query.documentSupport !== undefined) {
         process.env.DOCUMENT_SUPPORT = req.query.documentSupport as string;
+        logger.info('Set DOCUMENT_SUPPORT from query param', { value: req.query.documentSupport });
       }
 
       logger.debug('MCP request received', {

@@ -118,46 +118,94 @@ const parseOrigins = (value: string | undefined, defaultValue: string[]): string
 
 // Load configuration from command line args or environment variables
 // Smithery passes config as camelCase env vars (clickupApiKey), but also support UPPER_SNAKE_CASE
+//
+// Configuration object uses getters to read process.env dynamically on every access
+// This allows Smithery HTTP transport to set process.env during requests and have
+// the config values update immediately (fixes issue where static config was created once at startup)
 const configuration: Config = {
-  clickupApiKey: envArgs.clickupApiKey || process.env.CLICKUP_API_KEY || process.env.clickupApiKey || '',
-  clickupTeamId: envArgs.clickupTeamId || process.env.CLICKUP_TEAM_ID || process.env.clickupTeamId || '',
-  enableSponsorMessage: process.env.ENABLE_SPONSOR_MESSAGE !== 'false',
-  documentSupport: envArgs.documentSupport || process.env.DOCUMENT_SUPPORT || process.env.DOCUMENT_MODULE || process.env.DOCUMENT_MODEL || 'false',
-  logLevel: parseLogLevel(envArgs.logLevel || process.env.LOG_LEVEL),
-  disabledTools: (
-    (envArgs.disabledTools || process.env.DISABLED_TOOLS || process.env.DISABLED_COMMANDS)?.split(',').map(cmd => cmd.trim()).filter(cmd => cmd !== '') || []
-  ),
-  enabledTools: (
-    (envArgs.enabledTools || process.env.ENABLED_TOOLS)?.split(',').map(cmd => cmd.trim()).filter(cmd => cmd !== '') || []
-  ),
-  enableSSE: parseBoolean(envArgs.enableSSE || process.env.ENABLE_SSE, false),
-  ssePort: parseInteger(envArgs.ssePort || process.env.SSE_PORT, 3000),
-  enableStdio: parseBoolean(envArgs.enableStdio || process.env.ENABLE_STDIO, true),
-  port: envArgs.port || process.env.PORT || '3231',
+  get clickupApiKey() {
+    return envArgs.clickupApiKey || process.env.CLICKUP_API_KEY || process.env.clickupApiKey || '';
+  },
+  get clickupTeamId() {
+    return envArgs.clickupTeamId || process.env.CLICKUP_TEAM_ID || process.env.clickupTeamId || '';
+  },
+  get enableSponsorMessage() {
+    return process.env.ENABLE_SPONSOR_MESSAGE !== 'false';
+  },
+  get documentSupport() {
+    return envArgs.documentSupport || process.env.DOCUMENT_SUPPORT || process.env.DOCUMENT_MODULE || process.env.DOCUMENT_MODEL || 'false';
+  },
+  get logLevel() {
+    return parseLogLevel(envArgs.logLevel || process.env.LOG_LEVEL);
+  },
+  get disabledTools() {
+    return (envArgs.disabledTools || process.env.DISABLED_TOOLS || process.env.DISABLED_COMMANDS)?.split(',').map(cmd => cmd.trim()).filter(cmd => cmd !== '') || [];
+  },
+  get enabledTools() {
+    return (envArgs.enabledTools || process.env.ENABLED_TOOLS)?.split(',').map(cmd => cmd.trim()).filter(cmd => cmd !== '') || [];
+  },
+  get enableSSE() {
+    return parseBoolean(envArgs.enableSSE || process.env.ENABLE_SSE, false);
+  },
+  get ssePort() {
+    return parseInteger(envArgs.ssePort || process.env.SSE_PORT, 3000);
+  },
+  get enableStdio() {
+    return parseBoolean(envArgs.enableStdio || process.env.ENABLE_STDIO, true);
+  },
+  get port() {
+    return envArgs.port || process.env.PORT || '3231';
+  },
   // Security configuration (opt-in for backwards compatibility)
-  enableSecurityFeatures: parseBoolean(process.env.ENABLE_SECURITY_FEATURES, false),
-  enableOriginValidation: parseBoolean(process.env.ENABLE_ORIGIN_VALIDATION, false),
-  enableRateLimit: parseBoolean(process.env.ENABLE_RATE_LIMIT, false),
-  enableCors: parseBoolean(process.env.ENABLE_CORS, false),
-  allowedOrigins: parseOrigins(process.env.ALLOWED_ORIGINS, [
-    'http://127.0.0.1:3231',
-    'http://localhost:3231',
-    'http://127.0.0.1:3000',
-    'http://localhost:3000',
-    'https://127.0.0.1:3443',
-    'https://localhost:3443',
-    'https://127.0.0.1:3231',
-    'https://localhost:3231'
-  ]),
-  rateLimitMax: parseInteger(process.env.RATE_LIMIT_MAX, 100),
-  rateLimitWindowMs: parseInteger(process.env.RATE_LIMIT_WINDOW_MS, 60000),
-  maxRequestSize: process.env.MAX_REQUEST_SIZE || '10mb',
+  get enableSecurityFeatures() {
+    return parseBoolean(process.env.ENABLE_SECURITY_FEATURES, false);
+  },
+  get enableOriginValidation() {
+    return parseBoolean(process.env.ENABLE_ORIGIN_VALIDATION, false);
+  },
+  get enableRateLimit() {
+    return parseBoolean(process.env.ENABLE_RATE_LIMIT, false);
+  },
+  get enableCors() {
+    return parseBoolean(process.env.ENABLE_CORS, false);
+  },
+  get allowedOrigins() {
+    return parseOrigins(process.env.ALLOWED_ORIGINS, [
+      'http://127.0.0.1:3231',
+      'http://localhost:3231',
+      'http://127.0.0.1:3000',
+      'http://localhost:3000',
+      'https://127.0.0.1:3443',
+      'https://localhost:3443',
+      'https://127.0.0.1:3231',
+      'https://localhost:3231'
+    ]);
+  },
+  get rateLimitMax() {
+    return parseInteger(process.env.RATE_LIMIT_MAX, 100);
+  },
+  get rateLimitWindowMs() {
+    return parseInteger(process.env.RATE_LIMIT_WINDOW_MS, 60000);
+  },
+  get maxRequestSize() {
+    return process.env.MAX_REQUEST_SIZE || '10mb';
+  },
   // HTTPS configuration
-  enableHttps: parseBoolean(process.env.ENABLE_HTTPS, false),
-  httpsPort: process.env.HTTPS_PORT || '3443',
-  sslKeyPath: process.env.SSL_KEY_PATH,
-  sslCertPath: process.env.SSL_CERT_PATH,
-  sslCaPath: process.env.SSL_CA_PATH,
+  get enableHttps() {
+    return parseBoolean(process.env.ENABLE_HTTPS, false);
+  },
+  get httpsPort() {
+    return process.env.HTTPS_PORT || '3443';
+  },
+  get sslKeyPath() {
+    return process.env.SSL_KEY_PATH;
+  },
+  get sslCertPath() {
+    return process.env.SSL_CERT_PATH;
+  },
+  get sslCaPath() {
+    return process.env.SSL_CA_PATH;
+  },
 };
 
 // Don't log to console as it interferes with JSON-RPC communication

@@ -25,6 +25,19 @@ function getClickUpServices(): ClickUpServices {
   if (!clickUpServicesInstance) {
     logger.info('Creating shared ClickUp services singleton (lazy initialization)');
 
+    // DEBUG: Log what config values we're using
+    logger.info('Reading config for service creation', {
+      hasApiKey: !!config.clickupApiKey,
+      apiKeyLength: config.clickupApiKey ? config.clickupApiKey.length : 0,
+      hasTeamId: !!config.clickupTeamId,
+      teamIdLength: config.clickupTeamId ? config.clickupTeamId.length : 0,
+      teamIdValue: config.clickupTeamId,
+      processEnvCLICKUP_API_KEY: !!process.env.CLICKUP_API_KEY,
+      processEnvCLICKUP_TEAM_ID: !!process.env.CLICKUP_TEAM_ID,
+      processEnvClickupApiKey: !!process.env.clickupApiKey,
+      processEnvClickupTeamId: !!process.env.clickupTeamId
+    });
+
     // Create the services instance
     clickUpServicesInstance = createClickUpServices({
       apiKey: config.clickupApiKey,
