@@ -23,6 +23,12 @@ startCommand:
         type: string
         title: "ClickUp Team ID"
         description: Your ClickUp Team ID.
+      documentSupport:
+        type: string
+        title: "Document Support"
+        description: "Enable ClickUp document operations (true/false)"
+        default: "false"
   exampleConfig:
     clickupApiKey: "pk_123456789"
     clickupTeamId: "12345678"
+    documentSupport: "false"

@@ -91,12 +91,29 @@ export function startSSEServer() {
       });
 
       const sessionId = req.headers['mcp-session-id'] as string | undefined;
+
+      // Read credentials from Smithery query params and set env vars
+      // Smithery sends config via query parameters: /mcp?clickupApiKey=xxx&clickupTeamId=yyy&documentSupport=true
+      // This replicates the behavior of the original stdio transport that used commandFunction to set env vars
+      if (req.query.clickupApiKey) {
+        process.env.CLICKUP_API_KEY = req.query.clickupApiKey as string;
+        process.env.clickupApiKey = req.query.clickupApiKey as string;
+      }
+      if (req.query.clickupTeamId) {
+        process.env.CLICKUP_TEAM_ID = req.query.clickupTeamId as string;
+        process.env.clickupTeamId = req.query.clickupTeamId as string;
+      }
+      if (req.query.documentSupport !== undefined) {
+        process.env.DOCUMENT_SUPPORT = req.query.documentSupport as string;
+      }
+
       logger.debug('MCP request received', {
         sessionId,
         hasBody: !!req.body,
         contentType: req.headers['content-type'],
         accept: req.headers.accept,
-        origin: req.headers.origin
+        origin: req.headers.origin,
+        hasCredentials: !!(req.query.clickupApiKey && req.query.clickupTeamId)
       });
       let transport: StreamableHTTPServerTransport;
 
