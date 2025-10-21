@@ -4,6 +4,8 @@
 [![GitHub Stars](https://img.shields.io/github/stars/TaazKareem/clickup-mcp-server?style=flat&logo=github)](https://github.com/TaazKareem/clickup-mcp-server/stargazers)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-no-grey.svg)](https://github.com/TaazKareem/clickup-mcp-server/graphs/commit-activity)
 
+[![smithery badge](https://smithery.ai/badge/@Canavati/clickup-mcp-server)](https://smithery.ai/server/@Canavati/clickup-mcp-server)
+
 *This repo is a fork of taazkareem/clickup-mcp-server*
 
 A Model Context Protocol (MCP) server for integrating ClickUp tasks with AI applications. This server allows AI agents to interact with ClickUp tasks, spaces, lists, and folders through a standardized protocol.
@@ -28,6 +30,14 @@ A Model Context Protocol (MCP) server for integrating ClickUp tasks with AI appl
 [![smithery badge](https://smithery.ai/badge/@taazkareem/clickup-mcp-server)](https://smithery.ai/server/@TaazKareem/clickup-mcp-server)
 
 The server is hosted on [Smithery](https://smithery.ai/server/@taazkareem/clickup-mcp-server). There, you can preview the available tools or copy the commands to run on your specific client app.
+
+### Installing via Smithery
+
+To install ClickUp Connector automatically via [Smithery](https://smithery.ai/server/@Canavati/clickup-mcp-server):
+
+```bash
+npx -y @smithery/cli install @Canavati/clickup-mcp-server
+```
 
 ## NPX Installation
 
